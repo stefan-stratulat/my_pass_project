@@ -42,8 +42,24 @@ def save_data():
     if len(website_data)== 0 or len(password_data)==0:
         messagebox.showerror(title="Oops!", message="Please don't leave any empy fields!")
     else:
-        with open('data.json','w') as file:
-            json.dump(new_data, file, indent=4)
+        try:
+            with open('data.json','r') as file:
+                #Read old data
+                data = json.load(file)
+                #Update old data with new data
+                data.update(new_data)
+        #error could happpen at first use if file not created
+        except FileNotFoundError:
+            with open('data.json', "w") as file:
+                json.dump(new_data, file, indent=4)
+        #error could happen if file exists but empty
+        except json.decoder.JSONDecodeError:
+            with open('data.json', "w") as file:
+                json.dump(new_data, file, indent=4)
+        else:
+            with open('data.json', "w") as file:
+                json.dump(data, file, indent=4)
+
         website_input.delete(0, END)
         password_input.delete(0, END)
 
